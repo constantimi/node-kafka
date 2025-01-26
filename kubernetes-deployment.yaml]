@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-exchange-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: payment-exchange-api
+  template:
+    metadata:
+      labels:
+        app: payment-exchange-api
+    spec:
+      containers:
+      - name: payment-exchange-api
+        image: payment-exchange-api:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: KAFKA_BROKER
+          value: "kafka-service:9092"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-exchange-api-service
+spec:
+  selector:
+    app: payment-exchange-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
